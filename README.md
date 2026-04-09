@@ -7,6 +7,8 @@ Headless Android debugging, traffic interception, and reverse-engineering toolbo
 The image is intentionally biased toward tools that work well in a CLI-first container:
 
 - Device access: `adb`, `fastboot`
+- JavaScript runtime and package manager: `node`, `npm`
+- Agent CLIs: `codex`, `opencode`, `claude`
 - APK inspection and rebuilds: `apktool`, `aapt`, `apksigner`, `zipalign`
 - DEX and Java decompilation: `jadx`, `dex2jar`
 - Dynamic instrumentation: `frida-tools`, `objection`
@@ -16,6 +18,10 @@ The image is intentionally biased toward tools that work well in a CLI-first con
 
 Pinned upstream versions in the current Dockerfile:
 
+- `nodejs` `24.14.1`
+- `codex` `0.118.0`
+- `opencode` `1.4.1`
+- `claude-code` `2.1.97`
 - `apktool` `3.0.1`
 - `jadx` `1.5.5`
 - `dex2jar` `2.4`
@@ -29,10 +35,13 @@ Run `tool-versions` inside the container to confirm the installed toolchain.
 ## Research notes
 
 - Google currently documents Platform-Tools revision `36.0.0`, but the Ubuntu `google-android-platform-tools-installer` package is `amd64`-only. This image therefore uses Ubuntu's native `adb` and `fastboot` packages so both `linux/amd64` and `linux/arm64` variants remain usable.
+- Ubuntu 24.04 ships Node `18.19.1`, which is older than I want for the current npm-based agent CLIs. The image therefore installs official Node.js LTS `24.14.1` from `nodejs.org`.
+- `@openai/codex`, `opencode-ai`, and `@anthropic-ai/claude-code` all publish platform-aware npm packages, so they fit the same multi-arch container model as the rest of this image.
 - `apktool`, `jadx`, `dex2jar`, `frida-tools`, `mitmproxy`, `objection`, and `androguard` are current enough to make sense as the default core set for Android app triage, interception, repackaging, and instrumentation.
 - `radare2` `6.1.2` and `binwalk` `3.1.0` are relevant for lower-level native or firmware work, but I left them out of the base image because they materially increase build size and Ubuntu's packaged versions lag upstream. If you want them, add them in a derivative image.
 - GUI-heavy tools such as Ghidra, Cutter, Android Studio, and full JADX desktop use are better left on the host. The container stays focused on headless workflows.
 - `frida-server` is intentionally not bundled because it must match the target Android device architecture and Frida release you are using.
+- These agent CLIs do not come pre-authenticated. You still need to pass the relevant credentials or run their normal login flow at container runtime.
 
 ## Windows support
 
@@ -56,6 +65,31 @@ Show the installed tool versions:
 
 ```bash
 docker run --rm android-tools:dev tool-versions
+```
+
+Run the bundled coding agents:
+
+```bash
+docker run --rm -it \
+  -v "$PWD:/workspace" \
+  -e OPENAI_API_KEY \
+  android-tools:dev \
+  codex --help
+```
+
+```bash
+docker run --rm -it \
+  -v "$PWD:/workspace" \
+  -e ANTHROPIC_API_KEY \
+  android-tools:dev \
+  claude --help
+```
+
+```bash
+docker run --rm -it \
+  -v "$PWD:/workspace" \
+  android-tools:dev \
+  opencode --help
 ```
 
 Run `mitmweb` for Android traffic interception:
@@ -127,6 +161,11 @@ ghcr.io/sagerenn/android-tools
 
 - Google Platform-Tools release notes: <https://developer.android.com/studio/releases/platform-tools>
 - Docker Desktop on Windows install docs: <https://docs.docker.com/desktop/setup/install/windows-install/>
+- Node.js releases: <https://nodejs.org/dist/index.json>
+- Codex on npm: <https://www.npmjs.com/package/@openai/codex>
+- Claude Code on npm: <https://www.npmjs.com/package/@anthropic-ai/claude-code>
+- OpenCode install script: <https://opencode.ai/install>
+- OpenCode on npm: <https://www.npmjs.com/package/opencode-ai>
 - Apktool releases: <https://github.com/iBotPeaches/Apktool/releases>
 - JADX releases: <https://github.com/skylot/jadx/releases>
 - dex2jar releases: <https://github.com/pxb1988/dex2jar/releases>
