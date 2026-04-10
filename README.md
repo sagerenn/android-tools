@@ -1,6 +1,6 @@
 # android-tools
 
-Headless Android debugging, traffic interception, and reverse-engineering toolbox packaged as a multi-platform container image.
+Headless Android and Linux debugging, traffic interception, and reverse-engineering toolbox packaged as a multi-platform container image.
 
 ## Included tools
 
@@ -14,7 +14,9 @@ The image is intentionally biased toward tools that work well in a CLI-first con
 - Dynamic instrumentation: `frida-tools`, `objection`
 - Traffic interception: `mitmproxy`, `mitmdump`, `mitmweb`
 - Static analysis and triage: `androguard`, `file`, `sqlite3`
-- Native debugging helpers: `gdb-multiarch`, `strace`, `tcpdump`
+- Linux reverse engineering: `radare2`, `binwalk`, `binutils` including `strings`, `elfutils`, `patchelf`, `checksec`
+- Linux debugging and process inspection: `gdb`, `gdb-multiarch`, `strace`, `ltrace`, `lsof`, `procps`, `psmisc`, `tcpdump`
+- Shell and isolation helpers: `bubblewrap`, `tmux`, `vim`
 
 Pinned upstream versions in the current Dockerfile:
 
@@ -38,7 +40,7 @@ Run `tool-versions` inside the container to confirm the installed toolchain.
 - Ubuntu 24.04 ships Node `18.19.1`, which is older than I want for the current npm-based agent CLIs. The image therefore installs official Node.js LTS `24.14.1` from `nodejs.org`.
 - `@openai/codex`, `opencode-ai`, and `@anthropic-ai/claude-code` all publish platform-aware npm packages, so they fit the same multi-arch container model as the rest of this image.
 - `apktool`, `jadx`, `dex2jar`, `frida-tools`, `mitmproxy`, `objection`, and `androguard` are current enough to make sense as the default core set for Android app triage, interception, repackaging, and instrumentation.
-- `radare2` `6.1.2` and `binwalk` `3.1.0` are relevant for lower-level native or firmware work, but I left them out of the base image because they materially increase build size and Ubuntu's packaged versions lag upstream. If you want them, add them in a derivative image.
+- Linux-native debugging and RE tools such as `radare2`, `binwalk`, `checksec`, `elfutils`, `binutils` including `strings`, `patchelf`, `ltrace`, `lsof`, plus utility packages like `bubblewrap`, `tmux`, and `vim`, come from Ubuntu 24.04 packages. That keeps the image multi-arch and low-maintenance, even though some versions will trail upstream releases.
 - GUI-heavy tools such as Ghidra, Cutter, Android Studio, and full JADX desktop use are better left on the host. The container stays focused on headless workflows.
 - `frida-server` is intentionally not bundled because it must match the target Android device architecture and Frida release you are using.
 - These agent CLIs do not come pre-authenticated. You still need to pass the relevant credentials or run their normal login flow at container runtime.

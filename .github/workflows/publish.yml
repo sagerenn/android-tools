@@ -57,7 +57,7 @@ jobs:
             type=sha,prefix=sha-
           labels: |
             org.opencontainers.image.title=android-tools
-            org.opencontainers.image.description=Headless Android debugging and reverse engineering toolkit
+            org.opencontainers.image.description=Headless Android and Linux debugging, reverse engineering, and traffic interception toolkit
             org.opencontainers.image.vendor=${{ github.repository_owner }}
 
       - name: Build and push image

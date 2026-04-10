@@ -89,21 +89,35 @@ RUN apt-get update \
         aapt \
         adb \
         apksigner \
+        binutils \
+        binwalk \
+        bubblewrap \
+        checksec \
         curl \
+        elfutils \
         fastboot \
         file \
+        gdb \
         gdb-multiarch \
         git \
         jq \
         less \
+        lsof \
+        ltrace \
         openjdk-17-jre-headless \
+        patchelf \
+        procps \
+        psmisc \
         python3 \
         python3-venv \
+        radare2 \
         sqlite3 \
         strace \
         tcpdump \
+        tmux \
         unzip \
         usbutils \
+        vim \
         zipalign \
     && python3 -m venv /opt/venv \
     && /opt/venv/bin/pip install --no-cache-dir --upgrade pip setuptools wheel \
@@ -153,6 +167,18 @@ printf 'androguard=%s\n' '${ANDROGUARD_VERSION}'
 printf 'mitmproxy=%s\n' "\$(mitmproxy --version | sed -n '1s/^[^:]*: //p')"
 printf 'adb=%s\n' "\$(adb version | sed -n '1s/.*version //p')"
 printf 'fastboot=%s\n' "\$(fastboot --version | sed -n '1s/fastboot version //p')"
+printf 'binutils=%s\n' "\$(dpkg-query -W -f='\${Version}' binutils)"
+printf 'bubblewrap=%s\n' "\$(dpkg-query -W -f='\${Version}' bubblewrap)"
+printf 'gdb=%s\n' "\$(dpkg-query -W -f='\${Version}' gdb)"
+printf 'gdb-multiarch=%s\n' "\$(dpkg-query -W -f='\${Version}' gdb-multiarch)"
+printf 'radare2=%s\n' "\$(dpkg-query -W -f='\${Version}' radare2)"
+printf 'binwalk=%s\n' "\$(dpkg-query -W -f='\${Version}' binwalk)"
+printf 'checksec=%s\n' "\$(dpkg-query -W -f='\${Version}' checksec)"
+printf 'ltrace=%s\n' "\$(dpkg-query -W -f='\${Version}' ltrace)"
+printf 'lsof=%s\n' "\$(dpkg-query -W -f='\${Version}' lsof)"
+printf 'patchelf=%s\n' "\$(dpkg-query -W -f='\${Version}' patchelf)"
+printf 'tmux=%s\n' "\$(dpkg-query -W -f='\${Version}' tmux)"
+printf 'vim=%s\n' "\$(dpkg-query -W -f='\${Version}' vim)"
 EOF
 
 RUN chmod +x /opt/android-tools/bin/tool-versions
