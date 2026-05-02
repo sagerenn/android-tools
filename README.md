@@ -8,7 +8,9 @@ The image is intentionally biased toward tools that work well in a CLI-first con
 
 - Device access: `adb`, `fastboot`
 - JavaScript runtime and package manager: `node`, `npm`
+- Language tooling: `go`
 - Agent CLIs: `codex`, `opencode`, `claude`
+- Android native tooling: `Android NDK`
 - APK inspection and rebuilds: `apktool`, `aapt`, `apksigner`, `zipalign`
 - DEX and Java decompilation: `jadx`, `dex2jar`
 - Dynamic instrumentation: `frida-tools`, `objection`
@@ -16,7 +18,7 @@ The image is intentionally biased toward tools that work well in a CLI-first con
 - Static analysis and triage: `androguard`, `file`, `sqlite3`
 - Linux reverse engineering: `radare2`, `binwalk`, `binutils` including `strings`, `elfutils`, `patchelf`, `checksec`
 - Linux debugging and process inspection: `gdb`, `gdb-multiarch`, `strace`, `ltrace`, `lsof`, `procps`, `psmisc`, `tcpdump`
-- Shell and isolation helpers: `bubblewrap`, `tmux`, `vim`
+- Shell and isolation helpers: `openssh-client`, `bubblewrap`, `tmux`, `vim`
 
 Pinned upstream versions in the current Dockerfile:
 
@@ -27,6 +29,7 @@ Pinned upstream versions in the current Dockerfile:
 - `apktool` `3.0.1`
 - `jadx` `1.5.5`
 - `dex2jar` `2.4`
+- `android-ndk` `29.0.14206865` (`r29`)
 - `frida-tools` `14.8.1`
 - `mitmproxy` `12.2.1`
 - `objection` `1.12.4`
@@ -41,6 +44,7 @@ Run `tool-versions` inside the container to confirm the installed toolchain.
 - `@openai/codex`, `opencode-ai`, and `@anthropic-ai/claude-code` all publish platform-aware npm packages, so they fit the same multi-arch container model as the rest of this image.
 - `apktool`, `jadx`, `dex2jar`, `frida-tools`, `mitmproxy`, `objection`, and `androguard` are current enough to make sense as the default core set for Android app triage, interception, repackaging, and instrumentation.
 - Linux-native debugging and RE tools such as `radare2`, `binwalk`, `checksec`, `elfutils`, `binutils` including `strings`, `patchelf`, `ltrace`, `lsof`, plus utility packages like `bubblewrap`, `tmux`, and `vim`, come from Ubuntu 24.04 packages. That keeps the image multi-arch and low-maintenance, even though some versions will trail upstream releases.
+- For NDK, the `linux/amd64` image variant uses the official Google archive, while the `linux/arm64` image variant uses the `termux-ndk` Linux `aarch64` build so both published architectures include an NDK.
 - GUI-heavy tools such as Ghidra, Cutter, Android Studio, and full JADX desktop use are better left on the host. The container stays focused on headless workflows.
 - `frida-server` is intentionally not bundled because it must match the target Android device architecture and Frida release you are using.
 - These agent CLIs do not come pre-authenticated. You still need to pass the relevant credentials or run their normal login flow at container runtime.
