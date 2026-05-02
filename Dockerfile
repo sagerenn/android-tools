@@ -89,6 +89,9 @@ ARG MITMPROXY_VERSION=12.2.1
 ARG CODEX_VERSION=0.118.0
 ARG OPENCODE_VERSION=1.4.1
 ARG CLAUDE_CODE_VERSION=2.1.97
+ARG DLV_VERSION=1.26.3
+ARG GORESYM_VERSION=1.7.1
+ARG REDRESS_VERSION=1.2.64
 
 ENV LANG=C.UTF-8 \
     ANDROID_NDK_HOME=/opt/android-ndk \
@@ -157,6 +160,10 @@ RUN apt-get update \
         "@anthropic-ai/claude-code@${CLAUDE_CODE_VERSION}" \
         "@openai/codex@${CODEX_VERSION}" \
         "opencode-ai@${OPENCODE_VERSION}" \
+    && mkdir -p /opt/android-tools/bin \
+    && GOBIN=/opt/android-tools/bin go install "github.com/go-delve/delve/cmd/dlv@v${DLV_VERSION}" \
+    && GOBIN=/opt/android-tools/bin go install "github.com/mandiant/GoReSym@v${GORESYM_VERSION}" \
+    && GOBIN=/opt/android-tools/bin go install "github.com/goretk/redress@v${REDRESS_VERSION}" \
     && npm cache clean --force \
     && rm -rf /var/lib/apt/lists/*
 
@@ -194,6 +201,9 @@ printf 'objection=%s\n' '${OBJECTION_VERSION}'
 printf 'androguard=%s\n' '${ANDROGUARD_VERSION}'
 printf 'mitmproxy=%s\n' "\$(mitmproxy --version | sed -n '1s/^[^:]*: //p')"
 printf 'go=%s\n' "\$(go version | awk '{print \$3}')"
+printf 'dlv=%s\n' "\$(dlv version | sed -n 's/^Version: //p' | head -n 1)"
+printf 'goresym=%s\n' "\$(go version -m "\$(command -v GoReSym)" | awk '\$1~/^mod$/{print \$3; exit}')"
+printf 'redress=%s\n' "\$(go version -m "\$(command -v redress)" | awk '\$1~/^mod$/{print \$3; exit}')"
 printf 'ssh=%s\n' "\$(ssh -V 2>&1 | sed -n '1s/^OpenSSH_\\([^,]*\\).*/\\1/p')"
 printf 'android-ndk=%s\n' "\$(if [ -f /opt/android-ndk/source.properties ]; then sed -n 's/^Pkg.Revision = //p' /opt/android-ndk/source.properties | head -n 1; else printf 'unavailable-linux-%s' \"\$(dpkg --print-architecture)\"; fi)"
 printf 'adb=%s\n' "\$(adb version | sed -n '1s/.*version //p')"

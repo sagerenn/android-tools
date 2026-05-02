@@ -16,6 +16,7 @@ The image is intentionally biased toward tools that work well in a CLI-first con
 - Dynamic instrumentation: `frida-tools`, `objection`
 - Traffic interception: `mitmproxy`, `mitmdump`, `mitmweb`
 - Static analysis and triage: `androguard`, `file`, `sqlite3`
+- Go reverse engineering: `go tool objdump`, `go tool nm`, `go tool addr2line`, `dlv`
 - Linux reverse engineering: `radare2`, `binwalk`, `binutils` including `strings`, `elfutils`, `patchelf`, `checksec`
 - Linux debugging and process inspection: `gdb`, `gdb-multiarch`, `strace`, `ltrace`, `lsof`, `procps`, `psmisc`, `tcpdump`
 - Shell and isolation helpers: `openssh-client`, `bubblewrap`, `tmux`, `vim`
@@ -34,6 +35,7 @@ Pinned upstream versions in the current Dockerfile:
 - `mitmproxy` `12.2.1`
 - `objection` `1.12.4`
 - `androguard` `4.1.3`
+- `dlv` `1.26.3`
 
 Run `tool-versions` inside the container to confirm the installed toolchain.
 
@@ -46,8 +48,30 @@ Run `tool-versions` inside the container to confirm the installed toolchain.
 - Linux-native debugging and RE tools such as `radare2`, `binwalk`, `checksec`, `elfutils`, `binutils` including `strings`, `patchelf`, `ltrace`, `lsof`, plus utility packages like `bubblewrap`, `tmux`, and `vim`, come from Ubuntu 24.04 packages. That keeps the image multi-arch and low-maintenance, even though some versions will trail upstream releases.
 - For NDK, the `linux/amd64` image variant uses the official Google archive, while the `linux/arm64` image variant uses the `termux-ndk` Linux `aarch64` build so both published architectures include an NDK.
 - GUI-heavy tools such as Ghidra, Cutter, Android Studio, and full JADX desktop use are better left on the host. The container stays focused on headless workflows.
+- Go-focused host-side tooling worth pairing with this image: GoReSym, Redress, Ghidra, IDA Pro (Golang plugin), and Binary Ninja Go plugins.
 - `frida-server` is intentionally not bundled because it must match the target Android device architecture and Frida release you are using.
 - These agent CLIs do not come pre-authenticated. You still need to pass the relevant credentials or run their normal login flow at container runtime.
+
+## Go reverse engineering tools
+
+The container includes Go native triage tools (`go tool objdump`, `go tool nm`, `go tool addr2line`) plus `dlv` for dynamic analysis.
+
+Additional host-side tools that pair well with this image:
+
+- GoReSym: <https://github.com/mandiant/GoReSym>
+- Redress: <https://github.com/goretk/redress>
+- Ghidra: <https://github.com/NationalSecurityAgency/ghidra>
+- IDA Pro Golang plugin docs: <https://docs.hex-rays.com/user-guide/plugins/plugins-shipped-with-ida/golang-plugin>
+- Binary Ninja community plugins: <https://github.com/Vector35/community-plugins>
+- GoRE library: <https://github.com/goretk/gore>
+- pyGoRE (archived): <https://github.com/goretk/pygore>
+
+Go triage references:
+
+- `go tool objdump`: <https://pkg.go.dev/cmd/objdump>
+- `go tool nm`: <https://pkg.go.dev/cmd/nm>
+- `go tool addr2line`: <https://pkg.go.dev/cmd/addr2line>
+- Delve (`dlv`): <https://github.com/go-delve/delve>
 
 ## Windows support
 
