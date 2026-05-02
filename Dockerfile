@@ -67,7 +67,7 @@ RUN if [ "${TARGETARCH}" = "amd64" ]; then \
     ; elif [ "${TARGETARCH}" = "arm64" ]; then \
         curl -fsSLo android-ndk-arm64.7z "${ANDROID_NDK_ARM64_URL}" \
         && echo "${ANDROID_NDK_ARM64_SHA256}  android-ndk-arm64.7z" | sha256sum -c - \
-        && 7z x -y android-ndk-arm64.7z -o/opt \
+        && 7z x -snld -y android-ndk-arm64.7z -o/opt \
         && mv "/opt/android-ndk-${ANDROID_NDK_REVISION}" /opt/android-ndk \
     ; else \
         echo "Unsupported TARGETARCH for NDK install: ${TARGETARCH}" >&2 \
